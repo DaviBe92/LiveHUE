@@ -24,16 +24,23 @@
 
   <div class="container">
     <ul class="nav nav-tabs nav-justified">
-      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link active" data-toggle="tab" href="#settings_tab">Live Split</a></li>
-      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab" href="#request_tab">Web Request</a></li>
-      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab" href="#ifttt_tab">IFTTT</a></li>
-      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab" href="#nano_tab">Nano Leaves</a></li>
-      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab" href="#hue_tab">Phillips HUE</a></li>
+      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link active"
+          data-toggle="tab" href="#settings_tab">Live Split</a></li>
+      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
+          href="#request_tab">Web Request</a></li>
+      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
+          href="#ifttt_tab">IFTTT</a></li>
+      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
+          href="#nano_tab">Nano Leaves</a></li>
+      <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
+          href="#hue_tab">Phillips HUE</a></li>
     </ul>
 
     <div class="tab-content">
-      <div id="settings_tab" class="tab-pane active">
 
+      <!-- __________________SETTINGS________________________________________________________________________________________________________ -->
+
+      <div id="settings_tab" class="tab-pane active">
         <form>
           <div class="form-group">
             <label for="InputIPLivesplit">LiveSplit IP:</label>
@@ -55,29 +62,57 @@
 
       </div>
 
+      <!-- __________________WEB REQUEST________________________________________________________________________________________________________ -->
 
       <div id="request_tab" class="tab-pane fade">
-        <p>
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Web Request</label>
+          <input type="checkbox" class="form-check-input" id="requestCheckmark">
+          <label class="form-check-label" for="requestCheckmark">Web Request</label>
+        </div><br>
+        <div id="requestDiv">
+
+          <form>
+            <div class="form-group">
+              <!-- Not Running -->
+              <label for="Input_request_notrunning">Not Running: </label>
+              <input type="text" class="form-control" id="Input_request_notrunning" aria-describedby="NotRunningHelp"
+                placeholder="Enter Web Request">
+                <!-- Green -->
+                <label for="Input_request_green">Green: </label>
+                <input type="text" class="form-control" id="Input_request_green" aria-describedby="GreenHelp"
+                  placeholder="Enter Web Request">
+                  <!-- Red -->
+                  <label for="Input_request_red">Red: </label>
+              <input type="text" class="form-control" id="Input_request_red" aria-describedby="RedHelp"
+                placeholder="Enter Web Request">
+                <!-- Ended -->
+                <label for="Input_request_ended">Ended: </label>
+              <input type="text" class="form-control" id="Input_request_ended" aria-describedby="EndedHelp"
+                placeholder="Enter Web Request">
+                <!-- Personal Best -->
+                <label for="Input_request_pb">Personal Best: </label>
+              <input type="text" class="form-control" id="Input_request_pb" aria-describedby="PBHelp"
+                placeholder="Enter Web Request">
+            </div>
+          </form>
+
+
         </div>
-
-
-
-        </p>
       </div>
 
+      <!-- __________________IFTTT________________________________________________________________________________________________________ -->
 
       <div id="ifttt_tab" class="tab-pane fade">
         <h2 class="text-center rainbow-text">Comming Soon</h2>
       </div>
 
+      <!-- __________________NANOLEAF________________________________________________________________________________________________________ -->
 
       <div id="nano_tab" class="tab-pane fade">
         <h2 class="text-center rainbow-text">Comming Soon</h2>
       </div>
 
+      <!-- __________________PHILLIPS HUE________________________________________________________________________________________________________ -->
 
       <div id="hue_tab" class="tab-pane fade">
         <h2 class="text-center rainbow-text">Comming Soon</h2>

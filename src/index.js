@@ -3,6 +3,7 @@ const path = require('path')
 const LiveSplitClient = require('livesplit-client');
 const https = require('https');
 var tcpp = require('tcp-ping');
+const fs = require('fs');
 
 const { app, BrowserWindow, ipcMain } = electron;
 
@@ -22,7 +23,7 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 550,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, // allows access to 'process' of node, and use of 'require'
@@ -46,7 +47,10 @@ const createWindow = () => {
   loadConfig();
 
   // Create LiveSplit handler
-  handleLiveSplit();
+  // handleLiveSplit();
+  if (LHconfig.LiveSplit_autoconnect == true) {
+    connectLiveSplitServer();
+  }
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -80,15 +84,22 @@ app.on('activate', () => {
   }
 });
 
+// Config Handler________________________________________________________________________________
+
 // Read Config
 function loadConfig() {
-  const fs = require('fs');
   let rawdata = fs.readFileSync('./src/config.json');
   LHconfig = JSON.parse(rawdata);
 }
 
+// GUI data has chenged, reload config
+ipcMain.on('Config:saved', function (e) {
+  loadConfig();
+  console.log("Config reloaded");
+});
 
-// LiveSplit Handler
+
+// LiveSplit Handler___________________________________________________________________________
 async function handleLiveSplit() {
   try {
 
@@ -100,7 +111,7 @@ async function handleLiveSplit() {
     };
 
     // wait a bit for the window to load
-    await sleep(2000);
+    await sleep(1000);
 
     // Initialize client with LiveSplit Server's IP:PORT
     client = new LiveSplitClient(LHconfig.LiveSplit_IP);
@@ -109,7 +120,8 @@ async function handleLiveSplit() {
     client.on('connected', () => {
       bLiveSplitConnected = true;
       console.log('Connected!');
-      LScheckInterval = setInterval(getState, 1000);
+      // Check splitstates 10 times per second
+      LScheckInterval = setInterval(getState, 100);
       // Set GUI button
       mainWindow.webContents.send("LiveSplit:connected");
     });
@@ -124,9 +136,11 @@ async function handleLiveSplit() {
     });
 
     // Connect to the server, Promise will be resolved when the connection will be succesfully established
-    if (LHconfig.LiveSplit_autoconnect == true) {
-      connectLiveSplitServer();
-    }
+    // if (LHconfig.LiveSplit_autoconnect == true) {
+    //   connectLiveSplitServer();
+    // }
+
+    await client.connect();
 
   } catch (err) {
     console.error(err); // Something went wrong
@@ -169,14 +183,13 @@ async function getState() {
     // States: NotRunning, Red, Green, Ended, PersonalBest
     if (splitState === "NotRunning") {
       mainWindow.webContents.send("LiveSplit:notRunning");
-    } else if (splitState === "Green"){
-      console.log("send green");
+    } else if (splitState === "Green") {
       mainWindow.webContents.send("LiveSplit:green");
-    } else if (splitState === "Red"){
+    } else if (splitState === "Red") {
       mainWindow.webContents.send("LiveSplit:red");
-    } else if (splitState === "Ended"){
+    } else if (splitState === "Ended") {
       mainWindow.webContents.send("LiveSplit:ended");
-    } else if (splitState === "PersonalBest"){
+    } else if (splitState === "PersonalBest") {
       mainWindow.webContents.send("LiveSplit:personalBest");
     }
 
@@ -203,7 +216,8 @@ function connectLiveSplitServer() {
   let ipArray = LHconfig.LiveSplit_IP.split(":")
   tcpp.probe(ipArray[0], parseInt(ipArray[1]), function (err, available) {
     if (available) {
-      client.connect();
+      handleLiveSplit();
+      // client.connect();
     }
   });
 }
@@ -211,4 +225,7 @@ function connectLiveSplitServer() {
 // Disconnect from LiveSplit
 function disconnectLiveSplitServer() {
   client.disconnect();
+  client = null;
 }
+
+// Web Request Handler_______________________________________________________________________________________
