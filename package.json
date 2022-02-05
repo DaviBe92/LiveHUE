@@ -1,5 +1,5 @@
 {
-  "name": "ivehue",
+  "name": "livehue",
   "version": "1.0.0",
   "description": "LiveSplit - to RGB Lights",
   "main": "src/index.js",

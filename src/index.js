@@ -15,7 +15,7 @@ let client;
 let LScheckInterval;
 // States: NotRunning, Red, Green, Ended, PersonalBest
 let lastState = "start"
-let pb;
+let pb = "0:0";
 let bLiveSplitConnected = false;
 
 
@@ -35,7 +35,7 @@ const createWindow = () => {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Remove Menubar
   mainWindow.removeMenu()
@@ -84,7 +84,7 @@ app.on('activate', () => {
   }
 });
 
-// Config Handler________________________________________________________________________________
+// Config Handler_________________________________________________________________________________________________________
 
 // Read Config
 function loadConfig() {
@@ -99,7 +99,7 @@ ipcMain.on('Config:saved', function (e) {
 });
 
 
-// LiveSplit Handler___________________________________________________________________________
+// LiveSplit Handler_______________________________________________________________________________________________________
 async function handleLiveSplit() {
   try {
 
@@ -135,11 +135,6 @@ async function handleLiveSplit() {
       mainWindow.webContents.send("LiveSplit:disconnected");
     });
 
-    // Connect to the server, Promise will be resolved when the connection will be succesfully established
-    // if (LHconfig.LiveSplit_autoconnect == true) {
-    //   connectLiveSplitServer();
-    // }
-
     await client.connect();
 
   } catch (err) {
@@ -168,32 +163,21 @@ async function getState() {
     } else {
       splitState = "Green";
     }
+
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
     if (parseFloat(curr.replace(':', '')) < parseFloat(pb.replace(':', ''))) {
       splitState = "PersonalBest"
     }
-
   }
 
   // Check if state has changed
-  // Send update to UI
-  // TODO : send update to light
   if (lastState !== splitState) {
     // States: NotRunning, Red, Green, Ended, PersonalBest
-    if (splitState === "NotRunning") {
-      mainWindow.webContents.send("LiveSplit:notRunning");
-    } else if (splitState === "Green") {
-      mainWindow.webContents.send("LiveSplit:green");
-    } else if (splitState === "Red") {
-      mainWindow.webContents.send("LiveSplit:red");
-    } else if (splitState === "Ended") {
-      mainWindow.webContents.send("LiveSplit:ended");
-    } else if (splitState === "PersonalBest") {
-      mainWindow.webContents.send("LiveSplit:personalBest");
-    }
-
-
+    // Send states to the handlers
+    updateGUIstate(splitState);
+    webRequestHandler(splitState);
+    iftttHandler(splitState)
 
     console.log("State: " + splitState);
     lastState = splitState;
@@ -228,4 +212,114 @@ function disconnectLiveSplitServer() {
   client = null;
 }
 
-// Web Request Handler_______________________________________________________________________________________
+// GUI Handler_______________________________________________________________________________________________________________
+
+function updateGUIstate(splitState) {
+
+  // Send update to UI
+  if (splitState === "NotRunning") {
+    mainWindow.webContents.send("LiveSplit:notRunning");
+  } else if (splitState === "Green") {
+    mainWindow.webContents.send("LiveSplit:green");
+  } else if (splitState === "Red") {
+    mainWindow.webContents.send("LiveSplit:red");
+  } else if (splitState === "Ended") {
+    mainWindow.webContents.send("LiveSplit:ended");
+  } else if (splitState === "PersonalBest") {
+    mainWindow.webContents.send("LiveSplit:personalBest");
+  }
+
+}
+
+// Web Request Handler_______________________________________________________________________________________________________
+
+async function webRequestHandler(splitState) {
+
+  if (LHconfig.WebRequest_Enabled) {
+
+    if (splitState === "NotRunning") {
+
+      https.get(LHconfig.WebRequest_NotRunning, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Green") {
+
+      https.get(LHconfig.WebRequest_Green, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Red") {
+
+      https.get(LHconfig.WebRequest_Red, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Ended") {
+
+      https.get(LHconfig.WebRequest_Ended, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "PersonalBest") {
+
+      https.get(LHconfig.WebRequest_PB, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    }
+
+  }
+
+}
+
+
+// IFTTT Handler_______________________________________________________________________________________________________
+
+async function iftttHandler(splitState) {
+
+  if (LHconfig.IFTTT_Enabled && LHconfig.IFTTT_key !== "") {
+
+    if (splitState === "NotRunning") {
+      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_NotRunning +"/with/key/" + LHconfig.IFTTT_key
+      https.get(webhook, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Green") {
+      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Green +"/with/key/" + LHconfig.IFTTT_key
+      https.get(webhook, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Red") {
+      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Red +"/with/key/" + LHconfig.IFTTT_key
+      https.get(webhook, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "Ended") {
+      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Ended +"/with/key/" + LHconfig.IFTTT_key
+      https.get(webhook, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+
+    } else if (splitState === "PersonalBest") {
+      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_PB +"/with/key/" + LHconfig.IFTTT_key
+      https.get(webhook, (resp) => {
+      }).on("error", (err) => {
+        console.error("Error: " + err.message);
+      });
+    }
+  }
+
+}

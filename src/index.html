@@ -31,9 +31,9 @@
       <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
           href="#ifttt_tab">IFTTT</a></li>
       <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
-          href="#nano_tab">Nano Leaves</a></li>
+          href="#nano_tab">Nanoleaf</a></li>
       <li ondragstart="return false;" ondrop="return false;" class="nav-item"><a class="nav-link" data-toggle="tab"
-          href="#hue_tab">Phillips HUE</a></li>
+          href="#hue_tab">Philips HUE</a></li>
     </ul>
 
     <div class="tab-content">
@@ -65,6 +65,7 @@
       <!-- __________________WEB REQUEST________________________________________________________________________________________________________ -->
 
       <div id="request_tab" class="tab-pane fade">
+
         <div class="form-check">
           <input type="checkbox" class="form-check-input" id="requestCheckmark">
           <label class="form-check-label" for="requestCheckmark">Web Request</label>
@@ -77,20 +78,20 @@
               <label for="Input_request_notrunning">Not Running: </label>
               <input type="text" class="form-control" id="Input_request_notrunning" aria-describedby="NotRunningHelp"
                 placeholder="Enter Web Request">
-                <!-- Green -->
-                <label for="Input_request_green">Green: </label>
-                <input type="text" class="form-control" id="Input_request_green" aria-describedby="GreenHelp"
-                  placeholder="Enter Web Request">
-                  <!-- Red -->
-                  <label for="Input_request_red">Red: </label>
+              <!-- Green -->
+              <label for="Input_request_green">Green: </label>
+              <input type="text" class="form-control" id="Input_request_green" aria-describedby="GreenHelp"
+                placeholder="Enter Web Request">
+              <!-- Red -->
+              <label for="Input_request_red">Red: </label>
               <input type="text" class="form-control" id="Input_request_red" aria-describedby="RedHelp"
                 placeholder="Enter Web Request">
-                <!-- Ended -->
-                <label for="Input_request_ended">Ended: </label>
+              <!-- Ended -->
+              <label for="Input_request_ended">Ended: </label>
               <input type="text" class="form-control" id="Input_request_ended" aria-describedby="EndedHelp"
                 placeholder="Enter Web Request">
-                <!-- Personal Best -->
-                <label for="Input_request_pb">Personal Best: </label>
+              <!-- Personal Best -->
+              <label for="Input_request_pb">Personal Best: </label>
               <input type="text" class="form-control" id="Input_request_pb" aria-describedby="PBHelp"
                 placeholder="Enter Web Request">
             </div>
@@ -103,7 +104,43 @@
       <!-- __________________IFTTT________________________________________________________________________________________________________ -->
 
       <div id="ifttt_tab" class="tab-pane fade">
-        <h2 class="text-center rainbow-text">Comming Soon</h2>
+
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="iftttCheckmark">
+          <label class="form-check-label" for="iftttCheckmark">IFTTT</label>
+        </div><br>
+        <div id="iftttDiv">
+
+          <form>
+            <div class="form-group">
+              <!-- Key -->
+              <label for="Input_ifttt_key">Make Key: </label>
+              <input type="password" class="form-control" id="Input_ifttt_key" aria-describedby="KeyHelp"
+                placeholder="Enter your IFTTT make key">
+              <!-- Not Running -->
+              <label for="Input_ifttt_notrunning">Not Running: </label>
+              <input type="text" class="form-control" id="Input_ifttt_notrunning" aria-describedby="NotRunningHelp"
+                placeholder="Enter Event">
+              <!-- Green -->
+              <label for="Input_ifttt_green">Green: </label>
+              <input type="text" class="form-control" id="Input_ifttt_green" aria-describedby="GreenHelp"
+                placeholder="Enter Event">
+              <!-- Red -->
+              <label for="Input_ifttt_red">Red: </label>
+              <input type="text" class="form-control" id="Input_ifttt_red" aria-describedby="RedHelp"
+                placeholder="Enter Event">
+              <!-- Ended -->
+              <label for="Input_ifttt_ended">Ended: </label>
+              <input type="text" class="form-control" id="Input_ifttt_ended" aria-describedby="EndedHelp"
+                placeholder="Enter Event">
+              <!-- Personal Best -->
+              <label for="Input_ifttt_pb">Personal Best: </label>
+              <input type="text" class="form-control" id="Input_ifttt_pb" aria-describedby="PBHelp"
+                placeholder="Enter Event">
+            </div>
+          </form>
+
+        </div>
       </div>
 
       <!-- __________________NANOLEAF________________________________________________________________________________________________________ -->

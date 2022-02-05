@@ -1,5 +1,17 @@
 {
   "LiveSplit_IP": "127.0.0.1:16834",
-  "LiveSplit_autoconnect": true,
-  "WebRequest_Enabled": true
+  "LiveSplit_autoconnect": false,
+  "WebRequest_Enabled": false,
+  "WebRequest_NotRunning": "",
+  "WebRequest_Green": "",
+  "WebRequest_Red": "",
+  "WebRequest_Ended": "",
+  "WebRequest_PB": "",
+  "IFTTT_Enabled": false,
+  "IFTTT_key": "",
+  "IFTTT_NotRunning": "notRunning",
+  "IFTTT_Green": "green",
+  "IFTTT_Red": "red",
+  "IFTTT_Ended": "ended",
+  "IFTTT_PB": "personalBest"
 }
