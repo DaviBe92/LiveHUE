@@ -88,7 +88,7 @@ app.on('activate', () => {
 
 // Read Config
 function loadConfig() {
-  let rawdata = fs.readFileSync('./src/config.json');
+  let rawdata = fs.readFileSync(path.join(__dirname, 'config.json'));
   LHconfig = JSON.parse(rawdata);
 }
 

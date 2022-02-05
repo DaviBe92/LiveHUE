@@ -1,7 +1,8 @@
 'use strict';
 // Read Config
 const fs = require('fs');
-let rawdata = fs.readFileSync('./src/config.json');
+const path = require('path')
+let rawdata = fs.readFileSync(path.join(__dirname, 'config.json'));
 let LHconfig = JSON.parse(rawdata);
 
 // Fill GUI from config

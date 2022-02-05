@@ -1,5 +1,6 @@
 // Imports
 const electron = require('electron');
+const path = require('path')
 const { ipcRenderer } = electron;
 const fs = require('fs');
 
@@ -19,14 +20,14 @@ $('.tabAnchor').on('click', function () { // changes container bg to tab color s
 
 function loadConfig() {
     // read file first
-    let rawdata = fs.readFileSync('./src/config.json');
+    let rawdata = fs.readFileSync(path.join(__dirname, 'config.json'));
     LHconfig = JSON.parse(rawdata);
 }
 
 function saveConfig() {
     // Save config
     let data = JSON.stringify(LHconfig, null, 2);
-    fs.writeFileSync('./src/config.json', data);
+    fs.writeFileSync(path.join(__dirname, 'config.json'), data);
     // Tell main, config has been updated
     ipcRenderer.send('Config:saved');
 }
