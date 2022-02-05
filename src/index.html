@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <title>LiveHUE</title>
+</head>
+
+<body>
+
+  <div class="text-center">
+    <h1>Live<span class="rainbow-text">HUE</span></h1>
+  </div>
+
+
+  <div class="container">
+    <ul class="nav nav-tabs nav-justified">
+      <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#settings_tab">Live Split</a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#request_tab">Web Request</a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ifttt_tab">IFTTT</a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#nano_tab">Nano Leaves</a></li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#hue_tab">Phillips HUE</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="settings_tab" class="tab-pane active">
+
+        <form>
+          <div class="form-group">
+            <label for="InputIPLivesplit">LiveSplit IP:</label>
+            <input type="text" class="form-control" id="InputIPLivesplit" aria-describedby="IPHelp"
+              placeholder="Enter IP">
+            <small id="IPHelp" class="form-text text-muted">leave at 127.0.0.1:16834 if you don't know what you're
+              doing</small>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" value="" id="LiveSplit_autoconnect">
+              <label class="form-check-label" for="LiveSplit_autoconnect">Autoconnect at startup</label>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="btn_livesplit_connect"
+              onclick="connectLiveSplit()">Connect</button>
+          </div>
+        </form>
+
+        <strong>Current Split State: </strong>
+        <span class="badge bg-primary">Not Running</span>
+
+      </div>
+
+
+      <div id="request_tab" class="tab-pane fade">
+        <p>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+          <label class="form-check-label" for="exampleCheck1">Web Request</label>
+        </div>
+
+
+
+        </p>
+      </div>
+
+
+      <div id="ifttt_tab" class="tab-pane fade">
+        <h2 class="text-center rainbow-text">Comming Soon</h2>
+      </div>
+
+
+      <div id="nano_tab" class="tab-pane fade">
+        <h2 class="text-center rainbow-text">Comming Soon</h2>
+      </div>
+
+
+      <div id="hue_tab" class="tab-pane fade">
+        <h2 class="text-center rainbow-text">Comming Soon</h2>
+      </div>
+
+
+    </div>
+  </div>
+
+
+  <!-- SCRIPTS -->
+
+  <!-- Insert this line above script imports  -->
+  <script>
+    if (typeof module === 'object') {
+      window.module = module; module = undefined;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Insert this line after script imports -->
+  <script>if (window.module) module = window.module;</script>
+
+  <!-- RENDER SCRIPT -->
+  <script src="./renderer.js"></script>
+</body>
+
+</html>

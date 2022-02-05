@@ -1,0 +1,58 @@
+body{
+color: white;
+font-family: 'Roboto', sans-serif;
+background-color: rgb(45, 48, 51);
+
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */                               
+  
+}
+
+h1{
+    padding: 25px;
+    background-color: rgb(35, 39, 42);
+    font-weight: 100;
+    font-size: 72px;
+}
+  
+.rainbow-text {
+    font-weight: 400;
+    background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;  
+    animation: move 35s linear infinite;
+  }
+  
+  @keyframes move {
+    to {
+      background-position: 150vh;
+    }
+  }
+  
+.tab-content{
+    color: black;
+    background-color: white;
+    padding: 15px;
+    border-radius: 0 0 5px 5px;
+}
+
+.nav{
+    margin-top: 25px;    
+}
+.nav-tabs > li > a {
+    color: white;
+  }
+
+  .badge{
+      font-size: 18px;
+      color: white;
+      padding: 10px;
+  }
+
+
+
