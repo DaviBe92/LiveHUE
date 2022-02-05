@@ -3,9 +3,8 @@ const path = require('path')
 const LiveSplitClient = require('livesplit-client');
 const https = require('https');
 var tcpp = require('tcp-ping');
-const url = require('url');
 
-const {app, BrowserWindow, Menu, ipcMain} = electron;
+const { app, BrowserWindow, ipcMain } = electron;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,9 +12,10 @@ let mainWindow;
 let LHconfig;
 let client;
 let LScheckInterval;
-// States: NotRunning, Red, Green, Ended
+// States: NotRunning, Red, Green, Ended, PersonalBest
 let lastState = "start"
 let pb;
+let bLiveSplitConnected = false;
 
 
 const createWindow = () => {
@@ -26,7 +26,7 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, // allows access to 'process' of node, and use of 'require'
-       contextIsolation: false
+      contextIsolation: false
     }
   });
 
@@ -42,8 +42,6 @@ const createWindow = () => {
   // Disable rezise
   mainWindow.setResizable(false)
 
-  console.log("index ready!");
-
   // read config JSON
   loadConfig();
 
@@ -57,7 +55,6 @@ const createWindow = () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-
 
 };
 
@@ -94,25 +91,6 @@ function loadConfig() {
 // LiveSplit Handler
 async function handleLiveSplit() {
   try {
-    // Initialize client with LiveSplit Server's IP:PORT
-    client = new LiveSplitClient(LHconfig.LiveSplit_IP);
-
-    // Connected event
-    client.on('connected', () => {
-      console.log('Connected!');
-      LScheckInterval = setInterval(getState, 1000);
-    });
-
-    // Disconnected event
-    client.on('disconnected', () => {
-      console.log('Disconnected!');
-      clearInterval(LScheckInterval);
-    });
-
-    // Raw data reciever
-    client.on('data', (data) => {
-      //  console.log('Debug data:', data);
-    });
 
     // Some async sleep sugar for this example
     const sleep = (time) => {
@@ -121,16 +99,37 @@ async function handleLiveSplit() {
       });
     };
 
+    // wait a bit for the window to load
+    await sleep(2000);
+
+    // Initialize client with LiveSplit Server's IP:PORT
+    client = new LiveSplitClient(LHconfig.LiveSplit_IP);
+
+    // Connected event
+    client.on('connected', () => {
+      bLiveSplitConnected = true;
+      console.log('Connected!');
+      LScheckInterval = setInterval(getState, 1000);
+      // Set GUI button
+      mainWindow.webContents.send("LiveSplit:connected");
+    });
+
+    // Disconnected event
+    client.on('disconnected', () => {
+      bLiveSplitConnected = false;
+      console.log('Disconnected!');
+      clearInterval(LScheckInterval);
+      // Set GUI button
+      mainWindow.webContents.send("LiveSplit:disconnected");
+    });
+
     // Connect to the server, Promise will be resolved when the connection will be succesfully established
     if (LHconfig.LiveSplit_autoconnect == true) {
       connectLiveSplitServer();
     }
 
-    // Job done, now we can close this connection
-    //client.disconnect();
-
   } catch (err) {
-    // console.error(err); // Something went wrong
+    console.error(err); // Something went wrong
   }
 }
 
@@ -145,7 +144,7 @@ async function getState() {
     // when starting a new run, check and save PB
     if (await client.getSplitIndex() == 0 && lastState === "NotRunning") {
       pb = await client.getFinalTime();
-      console.log("PB Set " + parseFloat(pb.replace(':', '')));
+      // console.log("PB Set " + parseFloat(pb.replace(':', '')));
     }
 
     // Check Split Delta
@@ -153,7 +152,7 @@ async function getState() {
     if (splitDelta > 0) {
       splitState = "Red";
     } else {
-      splitState = "Green;"
+      splitState = "Green";
     }
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
@@ -164,11 +163,39 @@ async function getState() {
   }
 
   // Check if state has changed
+  // Send update to UI
+  // TODO : send update to light
   if (lastState !== splitState) {
+    // States: NotRunning, Red, Green, Ended, PersonalBest
+    if (splitState === "NotRunning") {
+      mainWindow.webContents.send("LiveSplit:notRunning");
+    } else if (splitState === "Green"){
+      console.log("send green");
+      mainWindow.webContents.send("LiveSplit:green");
+    } else if (splitState === "Red"){
+      mainWindow.webContents.send("LiveSplit:red");
+    } else if (splitState === "Ended"){
+      mainWindow.webContents.send("LiveSplit:ended");
+    } else if (splitState === "PersonalBest"){
+      mainWindow.webContents.send("LiveSplit:personalBest");
+    }
+
+
+
     console.log("State: " + splitState);
     lastState = splitState;
   }
 }
+
+// Catch Connect Button press
+ipcMain.on('LiveSplit:connectBtn', function (e) {
+  if (!bLiveSplitConnected) {
+    connectLiveSplitServer();
+  } else {
+    disconnectLiveSplitServer();
+  }
+
+});
 
 // Ping LiveSplit server to see if it is started, then connect to it
 function connectLiveSplitServer() {
@@ -179,4 +206,9 @@ function connectLiveSplitServer() {
       client.connect();
     }
   });
+}
+
+// Disconnect from LiveSplit
+function disconnectLiveSplitServer() {
+  client.disconnect();
 }
