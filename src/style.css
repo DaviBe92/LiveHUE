@@ -92,3 +92,10 @@ button{
   /* background-color: #a8bbbf; */
   background-color: rgb(35, 39, 42);
 }
+
+#footer{
+  font-size: 65%;
+  position: absolute;
+  top: 120px;
+  right: 5px;
+}

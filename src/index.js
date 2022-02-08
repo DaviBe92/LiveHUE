@@ -2,6 +2,7 @@ const electron = require('electron');
 const path = require('path')
 const LiveSplitClient = require('livesplit-client');
 const https = require('https');
+const http = require('http');
 var tcpp = require('tcp-ping');
 const fs = require('fs');
 
@@ -23,7 +24,7 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 550,
+    height: 560,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true, // allows access to 'process' of node, and use of 'require'
@@ -202,6 +203,8 @@ function connectLiveSplitServer() {
     if (available) {
       handleLiveSplit();
       // client.connect();
+    } else {
+      mainWindow.webContents.send("Main:alert", "LiveSplit Server not found!");
     }
   });
 }
@@ -239,35 +242,35 @@ async function webRequestHandler(splitState) {
 
     if (splitState === "NotRunning") {
 
-      https.get(LHconfig.WebRequest_NotRunning, (resp) => {
+      http.get(LHconfig.WebRequest_NotRunning, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Green") {
 
-      https.get(LHconfig.WebRequest_Green, (resp) => {
+      http.get(LHconfig.WebRequest_Green, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Red") {
 
-      https.get(LHconfig.WebRequest_Red, (resp) => {
+      http.get(LHconfig.WebRequest_Red, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Ended") {
 
-      https.get(LHconfig.WebRequest_Ended, (resp) => {
+      http.get(LHconfig.WebRequest_Ended, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "PersonalBest") {
 
-      https.get(LHconfig.WebRequest_PB, (resp) => {
+      http.get(LHconfig.WebRequest_PB, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });

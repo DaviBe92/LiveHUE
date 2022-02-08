@@ -16,6 +16,22 @@ $('.tabAnchor').on('click', function () { // changes container bg to tab color s
     $('.tab-content').css('background', destBg);
 });
 
+const shell = require('electron').shell;
+  
+// assuming $ is jQuery
+$(document).on('click', 'a[href^="http"]', function(event) {
+    event.preventDefault();
+    shell.openExternal(this.href);
+});
+
+
+// Show alerts from main________________________________________
+
+ipcRenderer.on('Main:alert', function (e, alertMsg) {
+    alert(alertMsg);
+});
+
+
 // Config Handler_____________________________________________________________________________________________________________________________
 
 function loadConfig() {
