@@ -16,6 +16,7 @@ let client;
 let LScheckInterval;
 // States: NotRunning, Red, Green, Ended, PersonalBest
 let lastState = "start"
+let lastIndex = 1;
 let pb = "0:0";
 let bLiveSplitConnected = false;
 
@@ -152,18 +153,23 @@ async function getState() {
   if (splitState === "Running") {
 
     // when starting a new run, check and save PB
-    if (await client.getSplitIndex() == 0 && lastState === "NotRunning") {
+    let index = await client.getSplitIndex();
+    if (index == 0 && index != lastIndex) {
       pb = await client.getFinalTime();
-      // console.log("PB Set " + parseFloat(pb.replace(':', '')));
+      console.log("PB Set " + parseFloat(pb.replace(':', '')));
     }
+    lastIndex = index;
 
     // Check Split Delta
-    const splitDelta = await client.getDelta();
+    let splitDelta = await client.getDelta();
     if (splitDelta > 0) {
       splitState = "Red";
     } else {
       splitState = "Green";
     }
+
+
+    console.log("Delta: " + splitDelta + ", State: " + splitState);
 
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
@@ -183,6 +189,8 @@ async function getState() {
     console.log("State: " + splitState);
     lastState = splitState;
   }
+
+  
 }
 
 // Catch Connect Button press
