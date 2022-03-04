@@ -123,7 +123,7 @@ async function handleLiveSplit() {
       bLiveSplitConnected = true;
       console.log('Connected!');
       // Check splitstates 10 times per second
-      LScheckInterval = setInterval(getState, 100);
+      LScheckInterval = setInterval(getState, 1000);
       // Set GUI button
       mainWindow.webContents.send("LiveSplit:connected");
     });
@@ -168,8 +168,12 @@ async function getState() {
       splitState = "Green";
     }
 
+let currTime = await client.getCurrentTime();
+    console.log("Delta: " + splitDelta + ", State: " + splitState + ", Time: " + currTime + ", PB: " + pb);
 
-    console.log("Delta: " + splitDelta + ", State: " + splitState);
+    // Get all available information
+    // const info = await client.getAll();
+    // console.log('Summary:', info);
 
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
