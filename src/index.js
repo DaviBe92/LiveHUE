@@ -159,36 +159,30 @@ async function getState() {
       pb = await client.getFinalTime();
       //console.log("PB Set " + parseFloat(pb.replace(':', '')));
     }
-    //lastIndex = index; // Moved down
 
 
     // Check Split Delta
-    //let splitDelta = await client.getDelta();
-    //if (splitDelta > 0) {
-    //  splitState = "Red";
-    //} else {
-    //  splitState = "Green";
-    //}
+    let splitDelta = await client.getDelta();
 
-    // Calculate delta
-    let compSplitTime = await client.getComparisonSplitTime();
-    compSplitTime = parseFloat(compSplitTime.replace(':', ''))
-    let currTime = await client.getCurrentTime();
-    currTime = parseFloat(currTime.replace(':', ''))
-    let splitDelta = parseFloat(currTime - compSplitTime).toFixed(2);
+    // Convert first char to Unicode to differenceate between '-' as Hyphen-Minus (45) for none, and '-' as Minus Sign (8722) for negative delta  and '+' as Plus Sign (43) for positive delta
+    let splitEval = splitDelta.charCodeAt(0);
 
-    // Check Delta
-    if (splitDelta > 0) {
-      splitState = "Red";
-    } else {
+    // Split has no delta, either first split or split never had a time
+    if (splitEval === 45) {
       splitState = "Green";
+    // Split has a negative delta -> Run is faster than comparison  
+    } else if (splitEval === 8722) {
+      splitState = "Green";
+    // Split has a positive delta -> Run is slower than comparison
+    } else if (splitEval === 43) {
+      splitState = "Red";
     }
 
-    //console.log("Delta: " + splitDelta + ", State: " + splitState + ", Time: " + currTime + ", CompTime: " + compSplitTime + ", PB: " + pb);
+//    console.log("Delta: " + splitEval + ", State: " + splitState);
 
     // Get all available information
-    //const info = await client.getAll();
-    //console.log('Summary:', info);
+   // const info = await client.getAll();
+   // console.log('Summary:', info);
 
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
