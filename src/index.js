@@ -16,6 +16,7 @@ let client;
 let LScheckInterval;
 // States: NotRunning, Red, Green, Ended, PersonalBest
 let lastState = "start"
+let lastIndex = 1;
 let pb = "0:0";
 let bLiveSplitConnected = false;
 
@@ -122,7 +123,7 @@ async function handleLiveSplit() {
       bLiveSplitConnected = true;
       console.log('Connected!');
       // Check splitstates 10 times per second
-      LScheckInterval = setInterval(getState, 100);
+      LScheckInterval = setInterval(getState, 1000);
       // Set GUI button
       mainWindow.webContents.send("LiveSplit:connected");
     });
@@ -147,23 +148,41 @@ async function getState() {
 
   // Get Run State
   let splitState = await client.getCurrentTimerPhase();
+  // Get Split index
+  let index = await client.getSplitIndex();
 
   // When running check splits 
   if (splitState === "Running") {
 
     // when starting a new run, check and save PB
-    if (await client.getSplitIndex() == 0 && lastState === "NotRunning") {
+    if (index == 0 && index != lastIndex) {
       pb = await client.getFinalTime();
-      // console.log("PB Set " + parseFloat(pb.replace(':', '')));
+      //console.log("PB Set " + parseFloat(pb.replace(':', '')));
     }
 
+
     // Check Split Delta
-    const splitDelta = await client.getDelta();
-    if (splitDelta > 0) {
-      splitState = "Red";
-    } else {
+    let splitDelta = await client.getDelta();
+
+    // Convert first char to Unicode to differenceate between '-' as Hyphen-Minus (45) for none, and '-' as Minus Sign (8722) for negative delta  and '+' as Plus Sign (43) for positive delta
+    let splitEval = splitDelta.charCodeAt(0);
+
+    // Split has no delta, either first split or split never had a time
+    if (splitEval === 45) {
       splitState = "Green";
+    // Split has a negative delta -> Run is faster than comparison  
+    } else if (splitEval === 8722) {
+      splitState = "Green";
+    // Split has a positive delta -> Run is slower than comparison
+    } else if (splitEval === 43) {
+      splitState = "Red";
     }
+
+//    console.log("Delta: " + splitEval + ", State: " + splitState);
+
+    // Get all available information
+   // const info = await client.getAll();
+   // console.log('Summary:', info);
 
   } else if (splitState === "Ended") {
     let curr = await client.getFinalTime();
@@ -172,17 +191,23 @@ async function getState() {
     }
   }
 
-  // Check if state has changed
-  if (lastState !== splitState) {
-    // States: NotRunning, Red, Green, Ended, PersonalBest
-    // Send states to the handlers
-    updateGUIstate(splitState);
-    webRequestHandler(splitState);
-    iftttHandler(splitState)
+  // Check if split has changed
+  if (index != lastIndex) {
+    // Check if state has changed
+    if (lastState !== splitState) {
+      // States: NotRunning, Red, Green, Ended, PersonalBest
+      // Send states to the handlers
+      updateGUIstate(splitState);
+      webRequestHandler(splitState);
+      iftttHandler(splitState)
 
-    console.log("State: " + splitState);
-    lastState = splitState;
+      //console.log("State: " + splitState);
+      lastState = splitState;
+    }
   }
+
+  // reset index counter
+  lastIndex = index;
 }
 
 // Catch Connect Button press
@@ -289,35 +314,35 @@ async function iftttHandler(splitState) {
   if (LHconfig.IFTTT_Enabled && LHconfig.IFTTT_key !== "") {
 
     if (splitState === "NotRunning") {
-      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_NotRunning +"/with/key/" + LHconfig.IFTTT_key
+      let webhook = "https://maker.ifttt.com/trigger/" + LHconfig.IFTTT_NotRunning + "/with/key/" + LHconfig.IFTTT_key
       https.get(webhook, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Green") {
-      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Green +"/with/key/" + LHconfig.IFTTT_key
+      let webhook = "https://maker.ifttt.com/trigger/" + LHconfig.IFTTT_Green + "/with/key/" + LHconfig.IFTTT_key
       https.get(webhook, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Red") {
-      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Red +"/with/key/" + LHconfig.IFTTT_key
+      let webhook = "https://maker.ifttt.com/trigger/" + LHconfig.IFTTT_Red + "/with/key/" + LHconfig.IFTTT_key
       https.get(webhook, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "Ended") {
-      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_Ended +"/with/key/" + LHconfig.IFTTT_key
+      let webhook = "https://maker.ifttt.com/trigger/" + LHconfig.IFTTT_Ended + "/with/key/" + LHconfig.IFTTT_key
       https.get(webhook, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
       });
 
     } else if (splitState === "PersonalBest") {
-      let webhook = "https://maker.ifttt.com/trigger/"+  LHconfig.IFTTT_PB +"/with/key/" + LHconfig.IFTTT_key
+      let webhook = "https://maker.ifttt.com/trigger/" + LHconfig.IFTTT_PB + "/with/key/" + LHconfig.IFTTT_key
       https.get(webhook, (resp) => {
       }).on("error", (err) => {
         console.error("Error: " + err.message);
